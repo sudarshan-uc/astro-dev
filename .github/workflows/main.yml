@@ -40,6 +40,6 @@ jobs:
     - name: Build image
       run: docker build -t registry.sudarshan-ae-29.astro-cre.com/astro-cicd-prod/airflow:ci-${{ github.sha }} .
     - name: Run tests
-      run: docker run --rm registry.sudarshan-ae-29.astro-cre.comastro-cicd-prod/airflow:ci-${{ github.sha }} /bin/bash -c "pytest tests"
+      run: docker run --rm registry.sudarshan-ae-29.astro-cre.com/astro-cicd-prod/airflow:ci-${{ github.sha }} /bin/bash -c "pytest tests"
     - name: Push image
       run: docker push registry.sudarshan-ae-29.astro-cre.com/astro-cicd-prod/airflow:ci-${{ github.sha }}
