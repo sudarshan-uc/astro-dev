@@ -34,7 +34,7 @@ jobs:
     - name: Log in to registry
       uses: docker/login-action@v1
       with:
-        registry: registry.${BASE_DOMAIN}
+        registry: registry.sudarshan-ae-29.astro-cre.com
         username: _
         password: ${{ secrets.SERVICE_ACCOUNT_KEY_PROD }}
     - name: Build image
