@@ -1,0 +1,45 @@
+name: Astronomer CI - Deploy code
+on:
+  push:
+    branches: [dev]
+  pull_request:
+    types:
+      - closed
+    branches: [main]
+jobs:
+  dev-push:
+    if: github.ref == 'refs/heads/dev'
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out the repo
+      uses: actions/checkout@v2
+    - name: Log in to registry
+      uses: docker/login-action@v1
+      with:
+        registry: registry.sudarshan-ae-29.astro-cre.com
+        username: _
+        password: ${{ secrets.SERVICE_ACCOUNT_KEY_DEV }}
+    - name: Build image
+      run: docker build -t registry.sudarshan-ae-29.astro-cre.com/ap-test/airflow:ci-${{ github.sha }} .
+    - name: Run tests
+      run: docker run --rm registry.sudarshan-ae-29.astro-cre.com/ap-test/airflow:ci-${{ github.sha }} /bin/bash -c "pytest tests"
+    - name: Push image
+      run: docker push registry.sudarshan-ae-29.astro-cre.com/ap-test/airflow:ci-${{ github.sha }}
+  prod-push:
+    if: github.event.action == 'closed' && github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out the repo
+      uses: actions/checkout@v2
+    - name: Log in to registry
+      uses: docker/login-action@v1
+      with:
+        registry: registry.sudarshan-ae-29.astro-cre.com
+        username: _
+        password: ${{ secrets.SERVICE_ACCOUNT_KEY_PROD }}
+    - name: Build image
+      run: docker build -t registry.sudarshan-ae-29.astro-cre.com/astro-cicd-prod/airflow:ci-${{ github.sha }} .
+    - name: Run tests
+      run: docker run --rm registry.sudarshan-ae-29.astro-cre.com/astro-cicd-prod/airflow:ci-${{ github.sha }} /bin/bash -c "pytest tests"
+    - name: Push image
+      run: docker push registry.sudarshan-ae-29.astro-cre.com/astro-cicd-prod/airflow:ci-${{ github.sha }}
